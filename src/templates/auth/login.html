@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в систему - Крестики-Нолики{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <h3 class="text-center">Вход в систему</h3>
+        <form id="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Логин</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Введите логин" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+        </form>
+        <div id="error-message" class="alert alert-danger mt-3 d-none"></div>
+    </div>
+</div>
+<script>
+    // Обработка отправки формы
+    $('#login-form').on('submit', function(e) {
+        e.preventDefault();  // Отмена стандартной отправки формы
+        console.log('submit');
+        // Получаем введенные данные
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        // Отправляем AJAX запрос на DRF эндпоинт авторизации
+        $.ajax({
+            url: '/api/v0/login/', // Здесь укажите путь к вашему DRF эндпоинту авторизации
+            method: 'POST',
+            data: JSON.stringify({username: username, password: password}),
+            contentType: 'application/json',
+            success: function(response) {
+                console.log('Успешная авторизация:', response);
+                window.location.href = '/';
+            },
+            error: function(xhr) {
+                var errorText = "Ошибка входа. Проверьте правильность введенных данных.";
+                if(xhr.responseJSON && xhr.responseJSON.detail){
+                    errorText = xhr.responseJSON.detail;
+                }
+                $('#error-message').text(errorText).removeClass('d-none');
+            }
+        });
+    });
+</script>
+{% endblock %}
