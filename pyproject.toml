@@ -8,6 +8,7 @@ dependencies = [
     "asgiref==3.8.1",
     "django==4.2.20",
     "djangorestframework==3.16.0",
+    "pillow>=11.1.0",
     "sqlparse==0.5.3",
     "typing-extensions==4.13.1",
 ]
