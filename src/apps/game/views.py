@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from django.contrib.redirects.models import Redirect
 
-# Create your views here.
+def clicker(request):
+    if not request.user.is_authenticated:
+        pass
+        Redirect()
+
