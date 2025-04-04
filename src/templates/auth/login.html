@@ -16,29 +16,27 @@
                 <label for="password">Пароль</label>
                 <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            <button type="submit" class="btn btn-primary btn-block mt-2">Войти</button>
         </form>
         <div id="error-message" class="alert alert-danger mt-3 d-none"></div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Обработка отправки формы
     $('#login-form').on('submit', function(e) {
-        e.preventDefault();  // Отмена стандартной отправки формы
+        e.preventDefault();
         console.log('submit');
-        // Получаем введенные данные
         var username = $('#username').val();
         var password = $('#password').val();
 
-        // Отправляем AJAX запрос на DRF эндпоинт авторизации
         $.ajax({
-            url: '/api/v0/login/', // Здесь укажите путь к вашему DRF эндпоинту авторизации
+            url: '/api/v0/login/',
             method: 'POST',
             data: JSON.stringify({username: username, password: password}),
             contentType: 'application/json',
             success: function(response) {
                 console.log('Успешная авторизация:', response);
-                window.location.href = '/';
+                window.location.href = "{% url 'clicker-game' %}";
             },
             error: function(xhr) {
                 var errorText = "Ошибка входа. Проверьте правильность введенных данных.";

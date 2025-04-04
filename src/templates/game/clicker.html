@@ -1,9 +1,36 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Кликер</title>
+{% extends 'base.html' %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+    <div class="container my-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card text-center shadow">
+            <div class="card-header bg-primary text-white">
+              <h2 class="mb-0">Алмазный кликер</h2>
+            </div>
+            <div class="card-body">
+              <p class="card-text">Деньги: <span id="money">0</span></p>
+              <p class="card-text">Всего кликов: <span id="total_clicks">0</span></p>
+              <img id="clickerImage" src="media/game/almaz.png" alt="Кликер" class="img-fluid" style="cursor: pointer;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="container my-5">
+      <div class="alert alert-warning text-center">
+        Пожалуйста, войдите в систему для доступа к кликеру.
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
     <script>
+        const image = document.getElementById('clickerImage');
         // Функция для обновления UI
         function updateUI(stats) {
             document.getElementById('money').innerText = stats.money;
@@ -31,6 +58,8 @@
 
         // Обработка клика по картинке с сохранением в localStorage
         function handleClick() {
+            image.classList.add('clicked');
+            setTimeout(() => image.classList.remove('clicked'), 100);
             // Получаем данные из localStorage или создаём базовый объект
             let stats = JSON.parse(localStorage.getItem('clickerStats')) || {
                 player: null,
@@ -93,11 +122,4 @@
             setInterval(sendStats, 5000); // 30000 миллисекунд = 30 секунд
         });
     </script>
-</head>
-<body>
-    <h1>Кликер</h1>
-    <p>Деньги: <span id="money">0</span></p>
-    <p>Всего кликов: <span id="total_clicks">0</span></p>
-    <img id="clickerImage" src="media/game/almaz.png" alt="Кликер" style="cursor: pointer;">
-</body>
-</html>
+{% endblock %}
