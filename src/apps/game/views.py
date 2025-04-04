@@ -1,7 +1,4 @@
-from django.contrib.redirects.models import Redirect
+from django.views.generic import TemplateView
 
-def clicker(request):
-    if not request.user.is_authenticated:
-        pass
-        Redirect()
-
+class ClickerGameView(TemplateView):
+    template_name = 'game/clicker.html'
