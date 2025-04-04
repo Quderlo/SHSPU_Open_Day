@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model, authenticate, login
 from rest_framework import serializers
 
+from apps.game.models import ClickerStats
+
 User = get_user_model()
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -26,9 +28,18 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         username = data['username']
-        username = data['password']
+        password = data['password']
 
         return data
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+
+        ClickerStats.objects.create(player=user)
+        return user
 
 
 class UserLoginSerializer(serializers.ModelSerializer):

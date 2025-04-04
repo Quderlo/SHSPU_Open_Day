@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model, login, logout
-from rest_framework import viewsets, permissions, status
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-
+from apps.game.models import ClickerStats
+from apps.game.serializers import ClickerStatsSerializer
 from apps.user.serializers import UserRegisterSerializer, UserLoginSerializer
 
 User = get_user_model()
@@ -51,11 +54,38 @@ class LogoutViewSet(viewsets.ViewSet):
         )
 
 
-
-
 class RegisterModelViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = User.objects.none()
     http_method_names = ['head', 'options', 'post']
     serializer_class = UserRegisterSerializer
 
+
+# Игровая реализация
+class ClickerStatsViewSet(viewsets.ModelViewSet):
+    serializer_class = ClickerStatsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'options', 'post', 'head', 'patch']
+
+    def get_queryset(self):
+        return ClickerStats.objects.filter(player=self.request.user)
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_queryset().first()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset().first()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def click(self, request):
+        stats = self.get_queryset().first()
+        stats.money += stats.click_power
+        stats.total_clicks += 1
+        stats.save()
+        return Response(self.get_serializer(stats).data)
