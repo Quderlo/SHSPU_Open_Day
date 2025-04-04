@@ -1,125 +1,14 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <script>
+    alert('Привет мир!')
+  </script>
 
-{% block content %}
-  {% if user.is_authenticated %}
-    <div class="container my-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card text-center shadow">
-            <div class="card-header bg-primary text-white">
-              <h2 class="mb-0">Алмазный кликер</h2>
-            </div>
-            <div class="card-body">
-              <p class="card-text">Деньги: <span id="money">0</span></p>
-              <p class="card-text">Всего кликов: <span id="total_clicks">0</span></p>
-              <img id="clickerImage" src="media/game/almaz.png" alt="Кликер" class="img-fluid" style="cursor: pointer;">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% else %}
-    <div class="container my-5">
-      <div class="alert alert-warning text-center">
-        Пожалуйста, войдите в систему для доступа к кликеру.
-      </div>
-    </div>
-  {% endif %}
-{% endblock %}
-
-
-{% block extra_js %}
-    <script>
-        const image = document.getElementById('clickerImage');
-        // Функция для обновления UI
-        function updateUI(stats) {
-            document.getElementById('money').innerText = stats.money;
-            document.getElementById('total_clicks').innerText = stats.total_clicks;
-        }
-
-        // Функция загрузки статистики с сервера
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/v0/stats/');
-                if (response.ok) {
-                    const data = await response.json();
-                    // Если API возвращает массив, берём первый объект
-                    const stats = Array.isArray(data) ? data[0] : data;
-                    // Сохраняем данные в localStorage
-                    localStorage.setItem('clickerStats', JSON.stringify(stats));
-                    updateUI(stats);
-                } else {
-                    console.error('Ошибка при загрузке статистики с сервера');
-                }
-            } catch (error) {
-                console.error('Ошибка запроса: ', error);
-            }
-        }
-
-        // Обработка клика по картинке с сохранением в localStorage
-        function handleClick() {
-            image.classList.add('clicked');
-            setTimeout(() => image.classList.remove('clicked'), 100);
-            // Получаем данные из localStorage или создаём базовый объект
-            let stats = JSON.parse(localStorage.getItem('clickerStats')) || {
-                player: null,
-                money: 0,
-                total_clicks: 0,
-                click_power: 1,
-                passive_power: 0
-            };
-
-            // Обновляем статистику
-            stats.total_clicks += 1;
-            stats.money += stats.click_power;
-
-            // Сохраняем обновлённые данные в localStorage
-            localStorage.setItem('clickerStats', JSON.stringify(stats));
-            updateUI(stats);
-        }
-
-        // Функция отправки данных на сервер
-        async function sendStats() {
-            // Берем статистику из localStorage
-            let stats = JSON.parse(localStorage.getItem('clickerStats'));
-            if (!stats) return;
-
-            const payload = {
-                player: stats.player,
-                money: stats.money,
-                total_clicks: stats.total_clicks,
-                click_power: stats.click_power,
-                passive_power: stats.passive_power
-            };
-
-            try {
-                const response = await fetch('/api/v0/stats/', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    console.error('Ошибка при отправке данных на сервер');
-                } else {
-                    console.log('Данные успешно отправлены на сервер');
-                }
-            } catch (error) {
-                console.error('Ошибка запроса при отправке данных: ', error);
-            }
-        }
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем данные из API
-            loadStats();
-            // Назначаем обработчик клика для картинки
-            document.getElementById('clickerImage').addEventListener('click', handleClick);
-            // Устанавливаем отправку данных на сервер каждые 30 секунд
-            setInterval(sendStats, 5000); // 30000 миллисекунд = 30 секунд
-        });
-    </script>
-{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  Привет, мир!
+</body>
+</html>
