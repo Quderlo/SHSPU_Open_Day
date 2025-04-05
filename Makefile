@@ -32,6 +32,9 @@ entrypoint: check-django
 	@echo "▶ Запуск entrypoint..."
 	uv run python $(SRC)/entrypoint.py
 
+run:
+	uv run python $(SRC)/manage.py runserver
+
 start-app: start-venv migrate entrypoint
 
 freeze:
