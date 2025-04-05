@@ -20,25 +20,17 @@ check-django:
 	}
 
 start-venv: check-uv
-	@if [ ! -d "$(VENV)" ]; then \
-		echo "▶ Создание виртуального окружения с Python $(PYTHON_VERSION)..."; \
-		$(UV) venv --python $(PYTHON_VERSION); \
-	fi
-	@echo "▶ Установка pip и зависимостей..."
-	$(PY) -m ensurepip --upgrade
-	$(PY) -m pip install --upgrade pip setuptools wheel
-	$(PY) -m pip install -r requirements.txt
-	@echo "✓ Окружение готово."
+	uv sync
 
 migrate: check-django
 	@echo "▶ Миграции..."
-	$(PY) $(SRC)/manage.py makemigrations game player user
-	$(PY) $(SRC)/manage.py migrate
+	uv run python $(SRC)/manage.py makemigrations game player user
+	uv run python $(SRC)/manage.py migrate
 	@echo "✓ Миграции выполнены."
 
 entrypoint: check-django
 	@echo "▶ Запуск entrypoint..."
-	$(PY) $(SRC)/entrypoint.py
+	uv run python $(SRC)/entrypoint.py
 
 start-app: start-venv migrate entrypoint
 
