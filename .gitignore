@@ -19,3 +19,4 @@ staticfiles/
 migrations/
 .idea/
 .idea/*
+cheats_ya.py
